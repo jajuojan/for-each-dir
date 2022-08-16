@@ -14,7 +14,7 @@ jobs:
         id: release_please
         with:
           release-type: rust
-          package-name: rs-license-formatter
+          package-name: for-each-dir
           pull-request-title-pattern: 'chore: release${component} ${version}'
 
       - name: RELEASE - Checkout code
