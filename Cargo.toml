@@ -9,7 +9,7 @@ repository = "https://github.com/jajuojan/for-each-dir"
 license = "MIT"
 
 [dependencies]
-clap = { version = "4.0.32", features = ["derive"] }
+clap = { version = "4.1.13", features = ["derive"] }
 
 [profile.release]
 strip = true
