@@ -1,6 +1,5 @@
 use clap::Parser;
-use std::fs;
-use std::fs::metadata;
+use std::fs::{self, metadata};
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -22,7 +21,7 @@ struct Args {
         long,
         help = "Depth of recursion. Negative values are counted from bottom"
     )]
-    depth: Option<u8>,
+    depth: Option<i8>,
 
     #[clap(short, long, default_value = "", help = "Filter following directories")]
     filter: String,
@@ -35,7 +34,11 @@ fn main() {
     let args = Args::parse();
 
     let paths = fs::read_dir(".").unwrap();
-    let command = format_command(&args.command);
+    let command = if args.plain {
+        args.command.clone()
+    } else {
+        format_command(&args.command)
+    };
 
     for path in paths {
         let path_name = path.unwrap().path();
