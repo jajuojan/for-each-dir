@@ -7,27 +7,29 @@ struct Args {
     #[clap(help = "The command to run on each directory")]
     command: String,
 
-    #[clap(short, long, help = "Be more verbose")]
-    verbose: bool,
-
     #[clap(short = 'p', long, help = "Do not transform \\n into newline")]
     plain: bool,
+    /*
+    // Unimplemented options
+        #[clap(short, long, help = "Be more verbose")]
+        verbose: bool,
 
-    #[clap(short, long, help = "Recurse into inner directories")]
-    recurse: bool,
+        #[clap(short, long, help = "Recurse into inner directories")]
+        recurse: bool,
 
-    #[clap(
-        short,
-        long,
-        help = "Depth of recursion. Negative values are counted from bottom"
-    )]
-    depth: Option<i8>,
+        #[clap(
+            short,
+            long,
+            help = "Depth of recursion. Negative values are counted from bottom"
+        )]
+        depth: Option<i8>,
 
-    #[clap(short, long, default_value = "", help = "Filter following directories")]
-    filter: String,
+        #[clap(short, long, default_value = "", help = "Filter following directories")]
+        filter: String,
 
-    #[clap(short, long, default_value = "", help = "Ignore following directories")]
-    ignore: String,
+        #[clap(short, long, default_value = "", help = "Ignore following directories")]
+        ignore: String,
+    */
 }
 
 fn main() {
