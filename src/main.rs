@@ -1,5 +1,8 @@
 use clap::Parser;
-use std::fs::{self, metadata};
+use std::{
+    fs::{self, metadata},
+    path::PathBuf,
+};
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -12,11 +15,16 @@ struct Args {
 
     #[clap(short, long, help = "Recurse into inner directories")]
     recurse: bool,
+
+    #[clap(
+        short,
+        long,
+        default_value = "",
+        help = "Only filter directories containing this directory"
+    )]
+    contains_dir: String,
     /*
     // Unimplemented options
-        #[clap(short, long, default_value = "", help = "Only filter directories containing this directory")]
-        contains_dir: String,
-
         #[clap(short, long, help = "Be more verbose")]
         verbose: bool,
 
@@ -44,22 +52,24 @@ fn main() {
         format_command(&args.command)
     };
 
-    process_directory(".", &command, args.recurse);
+    process_directory(".", &command, &args);
 }
 
-fn process_directory(dir: &str, command: &str, recurse: bool) {
+fn process_directory(dir: &str, command: &str, args: &Args) {
     let paths = fs::read_dir(dir).unwrap();
 
     for path in paths {
         let path_name = path.unwrap().path();
         let metadata = metadata(&path_name).unwrap();
         if metadata.is_dir() {
-            println!("pushd \"{}\"", path_name.display());
-            println!("  {}", command);
-            println!("popd\n");
+            if filter_dir(&path_name, args) {
+                println!("pushd \"{}\"", path_name.display());
+                println!("  {}", command);
+                println!("popd\n");
+            }
 
-            if recurse {
-                process_directory(path_name.to_str().unwrap(), command, recurse);
+            if args.recurse {
+                process_directory(path_name.to_str().unwrap(), command, args);
             }
         }
     }
@@ -68,4 +78,12 @@ fn process_directory(dir: &str, command: &str, recurse: bool) {
 /// Format the command to be executed
 fn format_command(raw_command: &String) -> String {
     raw_command.replace("\\n", "\n  ")
+}
+
+// Filter directory by name
+fn filter_dir(path_name: &PathBuf, args: &Args) -> bool {
+    if args.contains_dir.is_empty() || path_name.join(&args.contains_dir).exists() {
+        return true;
+    }
+    return false;
 }
