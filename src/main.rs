@@ -9,13 +9,16 @@ struct Args {
 
     #[clap(short = 'p', long, help = "Do not transform \\n into newline")]
     plain: bool,
+
+    #[clap(short, long, help = "Recurse into inner directories")]
+    recurse: bool,
     /*
     // Unimplemented options
+        #[clap(short, long, default_value = "", help = "Only filter directories containing this directory")]
+        contains_dir: String,
+
         #[clap(short, long, help = "Be more verbose")]
         verbose: bool,
-
-        #[clap(short, long, help = "Recurse into inner directories")]
-        recurse: bool,
 
         #[clap(
             short,
@@ -35,12 +38,17 @@ struct Args {
 fn main() {
     let args = Args::parse();
 
-    let paths = fs::read_dir(".").unwrap();
     let command = if args.plain {
         args.command.clone()
     } else {
         format_command(&args.command)
     };
+
+    process_directory(".", &command, args.recurse);
+}
+
+fn process_directory(dir: &str, command: &str, recurse: bool) {
+    let paths = fs::read_dir(dir).unwrap();
 
     for path in paths {
         let path_name = path.unwrap().path();
@@ -49,6 +57,10 @@ fn main() {
             println!("pushd \"{}\"", path_name.display());
             println!("  {}", command);
             println!("popd\n");
+
+            if recurse {
+                process_directory(path_name.to_str().unwrap(), command, recurse);
+            }
         }
     }
 }
