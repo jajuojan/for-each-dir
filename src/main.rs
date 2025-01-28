@@ -26,6 +26,9 @@ struct Args {
 
     #[clap(short, long, default_value = "", help = "Filter following directories")]
     filter: String,
+
+    #[clap(short, long, default_value = "", help = "Ignore following directories")]
+    ignore: String,
     /*
     // Unimplemented options
         #[clap(short, long, help = "Be more verbose")]
@@ -37,9 +40,6 @@ struct Args {
             help = "Depth of recursion. Negative values are counted from bottom"
         )]
         depth: Option<i8>,
-
-        #[clap(short, long, default_value = "", help = "Ignore following directories")]
-        ignore: String,
     */
 }
 
@@ -86,6 +86,9 @@ fn filter_dir(path_name: &PathBuf, args: &Args) -> bool {
         return false;
     }
     if !args.filter.is_empty() && !path_name.to_str().unwrap().contains(&args.filter) {
+        return false;
+    }
+    if !args.ignore.is_empty() && path_name.to_str().unwrap().contains(&args.ignore) {
         return false;
     }
     true
