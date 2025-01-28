@@ -23,6 +23,9 @@ struct Args {
         help = "Only filter directories containing this directory"
     )]
     contains_dir: String,
+
+    #[clap(short, long, default_value = "", help = "Filter following directories")]
+    filter: String,
     /*
     // Unimplemented options
         #[clap(short, long, help = "Be more verbose")]
@@ -34,9 +37,6 @@ struct Args {
             help = "Depth of recursion. Negative values are counted from bottom"
         )]
         depth: Option<i8>,
-
-        #[clap(short, long, default_value = "", help = "Filter following directories")]
-        filter: String,
 
         #[clap(short, long, default_value = "", help = "Ignore following directories")]
         ignore: String,
@@ -82,8 +82,11 @@ fn format_command(raw_command: &String) -> String {
 
 // Filter directory by name
 fn filter_dir(path_name: &PathBuf, args: &Args) -> bool {
-    if args.contains_dir.is_empty() || path_name.join(&args.contains_dir).exists() {
-        return true;
+    if !args.contains_dir.is_empty() && !path_name.join(&args.contains_dir).exists() {
+        return false;
     }
-    return false;
+    if !args.filter.is_empty() && !path_name.to_str().unwrap().contains(&args.filter) {
+        return false;
+    }
+    true
 }
